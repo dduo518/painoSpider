@@ -1,0 +1,13 @@
+# docker-compose.yml文件的版本
+version: "3"
+# 管理的服务
+services:
+  redis:
+    # 指定镜像
+    image: redis:4
+    ports:
+      # 端口映射
+      - 6379:6379
+    command:
+      # 执行的命令
+      redis-server

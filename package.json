@@ -1,0 +1,23 @@
+{
+  "name": "painospider",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENV=dev node app",
+    "prod": "NODE_ENV=prod node app"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "canvas": "^2.5.0",
+    "cheerio": "^1.0.0-rc.3",
+    "cos-nodejs-sdk-v5": "^2.5.9",
+    "crawler": "^1.2.1",
+    "mysql2": "^1.6.5",
+    "redis": "^2.8.0",
+    "request": "^2.88.0",
+    "rimraf": "^2.6.3",
+    "sequelize": "^5.8.7"
+  }
+}
