@@ -41,7 +41,7 @@ async function downloadAndUploads(imageUrl, title) {
     const dirPath = path.join(process.cwd(), './source')
     const filename = `${title}-${i}.png`;
     await download(dirPath, title, filename, item)
-    await removeWatermark(path.join(dirPath, title, filename), i === 0)
+    // await removeWatermark(path.join(dirPath, title, filename), i === 0)
     const uploadResp = await uploadPictureToBucket(filename, path.join(dirPath, title, filename))
     return {
       location: uploadResp.Location,
