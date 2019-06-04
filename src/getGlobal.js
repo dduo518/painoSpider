@@ -52,7 +52,7 @@ async function downloadAndUploads(imageUrl, title) {
   return resp
 }
 
-async function timeSleep(time = 10000) {
+async function timeSleep(time = 5000) {
   await new Promise((resolve) => {
     setTimeout(() => {
       resolve()

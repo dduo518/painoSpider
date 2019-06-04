@@ -1,12 +1,14 @@
 const redis = require('redis')
 const conf = require('./../../conf')
-const client = redis.createClient({
-  host: conf.redis.host,
-  port: conf.redis.port
-});
-client.on('error', function (err) {
-  console.log('redis connect error')
-})
+const fs = require('fs')
+const path = require('path')
+// const client = redis.createClient({
+//   host: conf.redis.host,
+//   port: conf.redis.port
+// });
+// client.on('error', function (err) {
+//   console.log('redis connect error')
+// })
 
 const redisClient = {
   get: async function (key) {
@@ -42,6 +44,18 @@ const redisClient = {
       })
     })
   }
+}
+
+redisClient._filepath = path.join(process.cwd(), 'count.txt')
+redisClient.get = async function () {
+  const count = fs.readFileSync(redisClient._filepath)
+  return count.toString()
+}
+
+redisClient.decr = async function () {
+  let count = await this.get()
+  count = count - 1
+  fs.writeFileSync(this._filepath, count)
 }
 
 module.exports = redisClient
