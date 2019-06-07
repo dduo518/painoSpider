@@ -16,17 +16,22 @@ module.exports = async function () {
     const result = await start(`https://www.hqgq.com/search/?q=&typeid=pu&b=qupu&page=${pageCount}`, getIndexUrl)
 
     while (result.length > 0) {
-      const page = result.pop();
-      let imageUrl = await start(page.uri, getSource)
-      page.imageUrl = JSON.stringify(imageUrl)
-      page.source = 'global'
-      const resp = await downloadAndUploads(imageUrl, page.title)
-      page.locations = JSON.stringify(resp)
-      page.bucket = conf.bucket.bucketName
-      await Collection.create(page);
-      const dirPath = path.join(process.cwd(), './source', page.title)
-      rimraf.sync(dirPath);
-      await timeSleep();
+      try {
+        const page = result.pop();
+        let imageUrl = await start(page.uri, getSource)
+        page.imageUrl = JSON.stringify(imageUrl)
+        page.source = 'global'
+        const resp = await downloadAndUploads(imageUrl, page.title)
+        page.locations = JSON.stringify(resp)
+        page.bucket = conf.bucket.bucketName
+        await Collection.create(page);
+        const dirPath = path.join(process.cwd(), './source', page.title)
+        rimraf.sync(dirPath);
+        await timeSleep();
+      } catch (e) {
+        console.log(e)
+      }
+
       console.log('end!')
     }
     await redisClient.decr(key)
