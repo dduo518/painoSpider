@@ -13,8 +13,14 @@ module.exports = async function () {
   var pageCount = await redisClient.get(key)
   console.log(pageCount, " start")
   while (pageCount > 0) {
-    const result = await start(`https://www.hqgq.com/search/?q=&typeid=pu&b=qupu&page=${pageCount}`, getIndexUrl)
-
+    await redisClient.decr(key)
+    let result = []
+    try {
+      result = await start(`https://www.hqgq.com/search/?q=&typeid=pu&b=qupu&page=${pageCount}`, getIndexUrl)
+    } catch (error) {
+      console.error(error)
+    }
+    // const result = await start(`https://www.hqgq.com/search/?q=&typeid=pu&b=qupu&page=${pageCount}`, getIndexUrl)
     while (result.length > 0) {
       try {
         const page = result.pop();
@@ -34,7 +40,7 @@ module.exports = async function () {
 
       console.log('end!')
     }
-    await redisClient.decr(key)
+    // await redisClient.decr(key)
     pageCount = pageCount - 1
     console.log("end page :", pageCount)
   }

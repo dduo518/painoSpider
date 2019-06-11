@@ -1,10 +1,11 @@
 const Sequelize = require('sequelize');
 const configs = require('../../conf').mysql;
+console.log(Sequelize.Op)
 const sequelize = new Sequelize(configs.database, configs.user, configs.password, {
   host: configs.host,
   port: configs.port,
   dialect: 'mysql',
-  operatorsAliases: false,
+  operatorsAliases: Sequelize.Op,
   'define': {
     'underscored': true,
     'charset': 'utf8mb4'
