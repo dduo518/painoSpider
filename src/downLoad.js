@@ -9,7 +9,7 @@ const download = async (dirPath, dirName, fileName, uri) => {
   const url = uri
   return new Promise((resolve, reject) => {
     request(url).pipe(stream).on("close", function (err) {
-      console.log("done:", fileName)
+      // console.log("done:", fileName)
       if (err) {
         reject(err)
       } else {

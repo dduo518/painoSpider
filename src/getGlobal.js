@@ -8,6 +8,8 @@ const redisClient = require('./utils/redis')
 const { Collection } = require('./models')
 const conf = require('./../config')
 const rimraf = require("rimraf");
+const mongoose = require('mongoose')
+const async = require('async')
 module.exports = async function () {
   const key = 'global:' + process.env.NODE_ENV
   var pageCount = await redisClient.get(key)
@@ -20,7 +22,6 @@ module.exports = async function () {
     } catch (error) {
       console.error(error)
     }
-    // const result = await start(`https://www.hqgq.com/search/?q=&typeid=pu&b=qupu&page=${pageCount}`, getIndexUrl)
     while (result.length > 0) {
       try {
         const page = result.pop();
@@ -48,22 +49,47 @@ module.exports = async function () {
 
 
 async function downloadAndUploads(imageUrl, title) {
-  const resp = await Promise.all(imageUrl.map(async (item, i) => {
-    const dirPath = path.join(process.cwd(), './source')
-    const filename = `${title}-${i}.png`;
-    await download(dirPath, title, filename, item)
-    // await removeWatermark(path.join(dirPath, title, filename), i === 0)
-    const uploadResp = await uploadPictureToBucket(filename, path.join(dirPath, title, filename))
-    return {
-      location: uploadResp.Location,
-      etag: uploadResp.ETag,
-      dirPath
-    }
-  }))
+
+  const resp = await new Promise((resolve, reject) => {
+    let i = 0
+    async.eachLimit(imageUrl, 5, async function (item) {
+      i++
+      console.log(item)
+      console.log(i)
+      const dirPath = path.join(process.cwd(), './source')
+      const _id = mongoose.Types.ObjectId()
+      const filename = `${_id}-${i}.png`;
+      await download(dirPath, title, filename, item)
+      const uploadResp = await uploadPictureToBucket(filename, path.join(dirPath, title, filename))
+      return {
+        location: uploadResp.Location,
+        etag: uploadResp.ETag,
+        dirPath
+      }
+    }, function (err, result) {
+      if (err) reject(err);
+      else resolve(result);
+    })
+  })
+
+  // const resp = await Promise.all(imageUrl.map(async (item, i) => {
+  //   const dirPath = path.join(process.cwd(), './source')
+  //   const _id = mongoose.Types.ObjectId()
+  //   const filename = `${_id}-${i}.png`;
+  //   await download(dirPath, title, filename, item)
+  //   // await removeWatermark(path.join(dirPath, title, filename), i === 0)
+  //   const uploadResp = await uploadPictureToBucket(filename, path.join(dirPath, title, filename))
+  //   return {
+  //     location: uploadResp.Location,
+  //     etag: uploadResp.ETag,
+  //     dirPath
+  //   }
+  // }))
+
   return resp
 }
 
-async function timeSleep(time = 5000) {
+async function timeSleep(time = 1000) {
   await new Promise((resolve) => {
     setTimeout(() => {
       resolve()
