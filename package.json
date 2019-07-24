@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=dev node app",
+    "start:debug": "cross-env debug='spride' NODE_ENV=dev node app",
     "prod": "cross-env NODE_ENV=prod pm2 start app.js",
     "dev": "cross-env NODE_ENV=dev pm2 start app.js"
   },
@@ -12,10 +13,10 @@
   "license": "ISC",
   "dependencies": {
     "async": "^3.1.0",
-    "canvas": "^2.5.0",
     "cheerio": "^1.0.0-rc.3",
     "cos-nodejs-sdk-v5": "^2.5.9",
     "crawler": "^1.2.1",
+    "debug": "^4.1.1",
     "mongoose": "^5.5.14",
     "mysql2": "^1.6.5",
     "redis": "^2.8.0",

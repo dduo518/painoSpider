@@ -1,5 +1,8 @@
 const cheerio = require("cheerio")
+const debug = require('debug')('spride')
+const conf = require('./../../conf')
 exports.getIndexUrl = function ($) {
+  debug("getIndexUrl")
   const _html = $('body').html();
   $ = cheerio.load(_html, { decodeEntities: false })
   const list = $(".result-list").find('ul').find('li');
@@ -24,6 +27,39 @@ exports.getSource = function ($) {
   const srcs = []
   box.map((i, item) => {
     srcs.push($(item).find('img').attr('src'))
+  })
+  return srcs
+}
+
+
+exports.getCCUrl = async function ($) {
+  debug("getCCUrl")
+  const _html = $('body').html();
+  $ = cheerio.load(_html, { decodeEntities: false })
+  const tbody = $("tbody").find("tr");
+  const list = []
+  tbody.map((i,item) => {
+    if (i != 0) {
+      list.push({
+        artist: $($(item).find("td")[0]).text(),
+        title: $($(item).find("td")[1]).text(),
+        uri: conf.sprideURL.cc.host+$($(item).find("td")[1]).find('a').attr('href'),
+        settle: $($(item).find("td")[2]).text()
+      })
+    }
+  })
+  debug(list)
+  return list
+}
+
+exports.getCCSource = function ($) {
+  const box = $('#swiper-wrapper').find('.swiper-slide');
+  const srcs = []
+  debug("getCCSource")
+  box.map((i, item) => {
+    if (i != 0 || i != (box.length - 1)) {
+      srcs.push($(item).find('img').attr('src'))
+    }
   })
   return srcs
 }

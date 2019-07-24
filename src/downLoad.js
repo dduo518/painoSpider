@@ -9,7 +9,7 @@ const download = async (dirPath, dirName, fileName, uri) => {
   const url = uri
   return new Promise((resolve, reject) => {
     request(url).pipe(stream).on("close", function (err) {
-      // console.log("done:", fileName)
+      console.log("done:", fileName)
       if (err) {
         reject(err)
       } else {
@@ -32,13 +32,22 @@ const cos = new COS({
   SecretId: conf.bucket.secretId,
   SecretKey: conf.bucket.secretKey
 });
+
 async function uploadPictureToBucket(key, filePath) {
+  return uploadToBucket(key, fs.createReadStream(filePath))
+}
+
+async function uploadStreamToBucket(key, stream) {
+  return uploadToBucket(key, stream)
+}
+
+async function uploadToBucket(key,body) {
   return new Promise((resolve, reject) => {
     cos.putObject({
       Bucket: conf.bucket.bucketName,
       Region: conf.bucket.region,
       Key: key,
-      Body: fs.createReadStream(filePath),
+      Body: body,
     }, function (err, data) {
       if (err) {
         reject(err)
@@ -51,5 +60,6 @@ async function uploadPictureToBucket(key, filePath) {
 
 module.exports = {
   download,
-  uploadPictureToBucket
+  uploadPictureToBucket,
+  uploadStreamToBucket
 }
